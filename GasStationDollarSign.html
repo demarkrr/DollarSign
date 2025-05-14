@@ -82,9 +82,9 @@
 <body>
   <div class="sign-container">
     <div class="sign-title">BUYING POWER OF $1</div>
-    <div class="price" data-tooltip="Equivalent to $1 in 2025">$12.45</div>
-    <div class="price" data-tooltip="What $1 today can buy compared to 1933">$0.07</div>
-    <div class="price" data-tooltip="Lowest historical value of $1">$0.06</div>
+    <div class="price" id="highest" data-tooltip="Equivalent to $1 in 2025">$12.45</div>
+    <div class="price" id="current" data-tooltip="What $1 today can buy compared to 1933">$0.07</div>
+    <div class="price" id="lowest" data-tooltip="Lowest historical value of $1">$0.06</div>
     <div class="label-row">
       <span>Then</span>
       <span>Now</span>
@@ -94,5 +94,22 @@
   <div class="footer">
     Based on U.S. Consumer Price Index (CPI) data. Source: BLS.gov
   </div>
+
+  <script>
+    // Example CPI values (can be replaced with live API integration)
+    const cpi1933 = 13.0;   // CPI in 1933
+    const cpi2025 = 308.0;  // Placeholder CPI for 2025
+
+    const adjustedNow = (cpi1933 / cpi2025) * 1; // What $1 today is worth in 1933 dollars
+
+    const highestValue = 12.45; // Static for now
+    const lowestValue = 0.06;   // Static for now
+
+    document.getElementById("highest").textContent = `$${highestValue.toFixed(2)}`;
+    document.getElementById("current").textContent = `$${adjustedNow.toFixed(2)}`;
+    document.getElementById("lowest").textContent = `$${lowestValue.toFixed(2)}`;
+
+    document.getElementById("current").setAttribute("data-tooltip", `Updated with CPI: $1 today has the buying power of ~$${adjustedNow.toFixed(2)} in 1933`);
+  </script>
 </body>
 </html>
