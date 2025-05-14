@@ -103,7 +103,7 @@
 
     const adjustedNow = (cpi1933 / cpi2025) * 1; // What $1 today is worth in 1933 dollars
 
-    const highestValue = 12.45; // Static for now
+    const highestValue = cpi2025 / cpi1933; // Static for now
     const lowestValue = 0.06;   // Static for now
 
     document.getElementById("highest").textContent = `$${highestValue.toFixed(2)}`;
