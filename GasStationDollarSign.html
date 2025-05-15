@@ -24,7 +24,7 @@
       padding: 30px 40px;
       text-align: center;
       box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
-      max-width: 400px;
+      max-width: min(90vw, 500px);
     }
 
     .sign-title {
@@ -33,7 +33,7 @@
     }
 
     .price {
-      font-size: 48px;
+      font-size: clamp(32px, 5vw, 40px);
       margin: 10px 0;
       padding: 10px;
       background: #000;
@@ -46,7 +46,7 @@
     .price::after {
       content: attr(data-tooltip);
       position: absolute;
-      bottom: -30px;
+      top: -40px;
       left: 50%;
       transform: translateX(-50%);
       background: rgba(0, 0, 0, 0.8);
@@ -57,6 +57,7 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.3s;
+      white-space: nowrap;
     }
 
     .price:hover::after {
@@ -77,40 +78,70 @@
       color: #888;
       text-align: center;
     }
+
+    .footer a {
+      color: #0f0;
+      text-decoration: none;
+    }
+
+    @media (max-width: 400px) {
+      .sign-title {
+        font-size: 20px;
+      }
+      .label-row {
+        font-size: 14px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="sign-container">
     <div class="sign-title">BUYING POWER OF $1</div>
-    <div class="price" id="highest" data-tooltip="Equivalent to $1 in 2025">$12.45</div>
-    <div class="price" id="current" data-tooltip="What $1 today can buy compared to 1933">$0.07</div>
-    <div class="price" id="lowest" data-tooltip="Lowest historical value of $1">$0.06</div>
+    <div class="price" id="highest" data-tooltip="Value of $1 in 1933 in 2025 dollars" aria-label="Highest buying power of $1"></div>
+    <div class="price" id="current" data-tooltip="Value of $1 in 2025 in 1933 dollars" aria-label="Current buying power of $1"></div>
+    <div class="price" id="lowest" data-tooltip="Lowest historical value of $1 in 1933 dollars" aria-label="Lowest buying power of $1"></div>
     <div class="label-row">
-      <span>Then</span>
-      <span>Now</span>
-      <span>Worst</span>
+      <span>1933 Peak</span>
+      <span>2025 Value</span>
+      <span>Historical Low</span>
     </div>
   </div>
   <div class="footer">
-    Based on U.S. Consumer Price Index (CPI) data. Source: BLS.gov<br>
-    Benchmark year: 1933 is used as the reference for peak dollar buying power.
+    Based on U.S. Consumer Price Index (CPI) data. Source: <a href="https://www.bls.gov/cpi/">BLS.gov</a><br>
+    Benchmark year: 1933. Lowest value based on 2025 CPI (subject to historical verification).
   </div>
 
   <script>
-    // Example CPI values (can be replaced with live API integration)
-    const cpi1933 = 13.0;   // CPI in 1933
-    const cpi2025 = 308.0;  // Placeholder CPI for 2025
+    // CPI values
+    const cpi1933 = 13.0;
+    const cpi2025 = 319.799;
 
-    const adjustedNow = (cpi1933 / cpi2025) * 1; // What $1 today is worth in 1933 dollars
+    // Calculate values
+    const adjustedNow = cpi1933 / cpi2025; // $1 in 2025 in 1933 dollars
+    const highestValue = cpi2025 / cpi1933; // $1 in 1933 in 2025 dollars
+    const lowestValue = adjustedNow; // Assume 2025 is lowest
 
-    const highestValue = cpi2025 / cpi1933; // Static for now
-    const lowestValue = 0.06;   // Static for now
+    // Update DOM
+    try {
+      const highestEl = document.getElementById("highest");
+      const currentEl = document.getElementById("current");
+      const lowestEl = document.getElementById("lowest");
 
-    document.getElementById("highest").textContent = `$${highestValue.toFixed(2)}`;
-    document.getElementById("current").textContent = `$${adjustedNow.toFixed(2)}`;
-    document.getElementById("lowest").textContent = `$${lowestValue.toFixed(2)}`;
+      if (!highestEl || !currentEl || !lowestEl) {
+        throw new Error("DOM elements not found");
+      }
 
-    document.getElementById("current").setAttribute("data-tooltip", `Updated with CPI: $1 today has the buying power of ~$${adjustedNow.toFixed(2)} in 1933`);
+      highestEl.textContent = `$${highestValue.toFixed(2)}`;
+      currentEl.textContent = `$${adjustedNow.toFixed(2)}`;
+      lowestEl.textContent = `$${lowestValue.toFixed(2)}`;
+
+      highestEl.setAttribute("data-tooltip", `Value of $1 in 1933 in 2025 dollars: ~$${highestValue.toFixed(2)}`);
+      currentEl.setAttribute("data-tooltip", `Value of $1 in 2025 in 1933 dollars: ~$${adjustedNow.toFixed(2)}`);
+      lowestEl.setAttribute("data-tooltip", `Lowest historical value of $1 in 1933 dollars: ~$${lowestValue.toFixed(2)}`);
+    } catch (error) {
+      console.error("Error updating values:", error);
+      document.querySelector(".sign-container").innerHTML += '<p style="color: red;">Error loading data. Please try again.</p>';
+    }
   </script>
 </body>
 </html>
